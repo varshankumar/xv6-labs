@@ -32,11 +32,10 @@ int main(int argc, char *argv[]){
 
     } else if (rc == 0) {
         n = read(pipe_pair[0], buf, 1024);
-        printf("(pid:%d) :received ping\n", (int) getpid());
+        printf("(%d) :received ping\n", (int) getpid());
         write(pipe_pair[1], "pong", 4);
 
     } else {
-        printf("hello, I am parent of %d (pid:%d)\n", rc, (int) getpid());
         write(pipe_pair[1], "ping", 4);
         n = read(pipe_pair[0], buf, 1024);
 
@@ -44,10 +43,7 @@ int main(int argc, char *argv[]){
                 printf("Error reading from pipe: %d", n);
                 exit(-1);
         }
-
-        buf[n] = '\0';
-
-        printf("Read %d bytes from pipe: %s\n", n, buf);
+         printf("(%d) :received pong\n", (int) getpid());
 
     }
     exit(0);
