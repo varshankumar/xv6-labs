@@ -1,7 +1,7 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-#include <stdio.h>
+// #include <stdio.h>
 
 // #include <stdlib.h>
 
@@ -22,14 +22,12 @@ int main(int argc, char *argv[]){
     char buf[1024];
 
     if (res < 0) {
-        fprintf(stderr, "pipe failed\n");
         exit(1);
     }
 
     int rc = fork();
 
     if (rc < 0) {
-        fprintf(stderr, "fork failed\n");
         exit(1);
 
     } else if (rc == 0) {
