@@ -7,6 +7,6 @@ int main(int argc, char *argv[]) {
 	if (argc > 1)
 		sleep(atoi(argv[1]));
 	else
-		write("Argument not given\n");
+		fprintf("Argument not given\n");
 	exit(0);
 }
