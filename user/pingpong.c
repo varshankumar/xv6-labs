@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 
     } else if (rc == 0) {
         n = read(pipe_pair[0], buf, 1024);
-        printf("(%d) :received ping\n", (int) getpid());
+        printf("(%d): received ping\n", (int) getpid());
         write(pipe_pair[1], "pong", 4);
 
     } else {
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
                 printf("Error reading from pipe: %d", n);
                 exit(-1);
         }
-         printf("(%d) :received pong\n", (int) getpid());
+         printf("(%d): received pong\n", (int) getpid());
 
     }
     exit(0);
