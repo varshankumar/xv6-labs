@@ -1,19 +1,19 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-#include <stdio.h>
+// #include <stdio.h>
 
-#include <stdlib.h>
+// #include <stdlib.h>
 
-#include <unistd.h>
+// #include <unistd.h>
 
-#include <string.h>
+// #include <string.h>
 
-#include <fcntl.h>
+// #include <fcntl.h>
 
-#include <assert.h>
+// #include <assert.h>
 
-#include <sys/wait.h>
+// #include <sys/wait.h>
 
 int main(int argc, char *argv[]){
     int pipe_pair[2];
