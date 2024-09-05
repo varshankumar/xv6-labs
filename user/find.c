@@ -44,8 +44,11 @@ ls(char *path)
 
   switch(st.type){
   case T_DEVICE:
+  
   case T_FILE:
+   if(strcmp(fmtname(buf), path)==0){
     printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
+   }
     break;
 
   case T_DIR:
