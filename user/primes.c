@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
     while(1){
         int prime;
 
-        if (read(pipe_pair[0], &prime, sizeof(int)) == 0){
+        if (read(pipe_pair[0], &prime, sizeof(prime)) == 0){
             close(pipe_pair[0]);
             exit(0);
         }
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
         pipe(new_pipe);
 
         if(fork()==0){
-            close(new_pipe[0]);
+            close(new_pipe[1]);
             pipe_pair[0]=new_pipe[0];
             continue;
         }
@@ -34,9 +34,9 @@ int main(int argc, char *argv[]){
             close(new_pipe[0]);
             int num;
 
-            while(read(pipe_pair[0], &num, sizeof(int)) > 0){
+            while(read(pipe_pair[0], &num, sizeof(num)) > 0){
                 if(num%prime != 0){
-                    write(new_pipe[1], &num, sizeof(int));
+                    write(new_pipe[1], &num, sizeof(num));
                 }
             }
             close(pipe_pair[0]);
