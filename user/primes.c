@@ -18,6 +18,7 @@ int main(int argc, char *argv[]){
             close(pipe_pair[0]);
             exit(0);
         }
+
         printf("prime %d\n", prime);
 
         int new_pipe[2];
@@ -39,7 +40,7 @@ int main(int argc, char *argv[]){
                 }
             }
             close(pipe_pair[0]);
-            close(new_pipe[0]);
+            close(new_pipe[1]);
             wait(0);
             exit(0);
         }
