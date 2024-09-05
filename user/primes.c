@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
             if(n == 0){
                 exit(0);
             }
-            printf("prime %d\n", n);
+            printf("prime %d\n", prime);
 
             
             int new_pipe[2];
