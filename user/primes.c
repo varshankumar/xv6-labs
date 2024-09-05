@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[]){
     int pipe_pair[2];
-    int res = pipe(pipe_pair);
+    pipe(pipe_pair);
 
     if(fork()==0){
         close(pipe_pair[1]);
