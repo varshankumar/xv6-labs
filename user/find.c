@@ -65,7 +65,7 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      if(strcmp(ftname(buf), argv[2])==0){
+      if(strcmp(fmtname(buf), path)==0){
       printf("%s\n", fmtname(buf));
       }
     }
