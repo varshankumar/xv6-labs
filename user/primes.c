@@ -3,59 +3,58 @@
 #include "user/user.h"
 
 
-int main(int argc, char *argv[]) {
-    int p[2];  // Initial pipe for feeding numbers
-    pipe(p);   // Create a pipe
+int main(int argc, char *argv[]){
+    int pipe_pair[2];
+    int res = pipe(pipe_pair);
 
-    if (fork() == 0) {  // First child process
-        close(p[1]);    // Close write-end of the first pipe (child only reads)
+    if(fork()==0){
+        close(pipe_pair[1]);
+    
 
-        // Infinite loop to handle each prime number
-        while (1) {
-            int prime;
-            // Read the first number from the pipe, which will be a prime
-            if (read(p[0], &prime, sizeof(prime)) == 0) {
-                close(p[0]);  // Close the read-end when no more data
-                exit(0);      // Exit when done
-            }
-            printf("prime %d\n", prime);  // Output the prime number
+    while(1){
+        int prime;
 
-            int newp[2];  // Create a new pipe for the next stage
-            pipe(newp);
+        if (read(pipe_pair[0], &prime, sizeof(int)) == 0){
+            close(pipe_pair[0]);
+            exit(0);
+        }
+        printf("prime %d\n", prime);
 
-            if (fork() == 0) {  // Fork a new process to handle the next prime
-                close(newp[1]);  // Next process will only read
-                p[0] = newp[0];  // Update the read-end for the new process
-                continue;        // Continue the loop to handle the next prime
-            } else {
-                close(newp[0]);  // Parent process closes read-end
-                int n;
+        int new_pipe[2];
+        pipe(new_pipe);
 
-                // Filter numbers that are not divisible by the current prime
-                while (read(p[0], &n, sizeof(n)) > 0) {
-                    if (n % prime != 0) {
-                        write(newp[1], &n, sizeof(n));  // Send non-divisible numbers
-                    }
+        if(fork()==0){
+            close(new_pipe[0]);
+            pipe_pair[0]=new_pipe[0];
+            continue;
+        }
+
+        else{
+            close(new_pipe[0]);
+            int num;
+
+            while(read(pipe_pair[0], &num, sizeof(int)) > 0){
+                if(num%prime != 0){
+                    write(new_pipe[1], &num, sizeof(int));
                 }
-
-                // Close the descriptors when done
-                close(p[0]);
-                close(newp[1]);
-                wait(0);  // Wait for the child process to finish
-                exit(0);  // Parent process exits
             }
+            close(pipe_pair[0]);
+            close(new_pipe[0]);
+            wait(0);
+            exit(0);
         }
-    } else {
-        close(p[0]);  // Parent closes read-end of the pipe
-
-        // Parent feeds numbers 2 through 35 into the pipeline
-        for (int i = 2; i <= 35; i++) {
-            write(p[1], &i, sizeof(i));  // Write each number to the pipe
-        }
-
-        close(p[1]);  // Close the write-end after sending all numbers
-        wait(0);      // Wait for the child process to finish
+    }
     }
 
-    exit(0);  // Exit when done
+    else{
+        close(pipe_pair[0]);
+        for(int i=2; i<=35; i++){
+            write(pipe_pair[1], &i, sizeof(i));
+        }
+        close(pipe_pair[1]);
+        wait(0);
+        
+    }
+    exit(0);
+
 }
