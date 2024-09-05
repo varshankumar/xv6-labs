@@ -45,7 +45,7 @@ ls(char *path)
   switch(st.type){
   case T_DEVICE:
   case T_FILE:
-    printf("test%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
+    printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
     break;
 
   case T_DIR:
@@ -65,7 +65,9 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+      if(strcmp(ftname(buf), argv[2])==0){
+      printf("%s\n", fmtname(buf));
+      }
     }
     break;
   }
