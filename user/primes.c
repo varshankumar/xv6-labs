@@ -19,10 +19,10 @@ int main(int argc, char *argv[]){
         exit(1);
 
     } else if (rc == 0) {
-        while(true){
+        while(1){
             close(pipe_pair[1]);
             int prime;
-            n = read(pipe_pair[0], prime, sizeof(prime));
+            n = read(pipe_pair[0], (int) prime, sizeof(prime));
             if(n == 0){
                 exit(0);
             }
@@ -38,8 +38,8 @@ int main(int argc, char *argv[]){
                 continue;
             } else {
                 int num;
-                while(true){
-                    n = read(pipe_pair[0], num, sizeof(num));
+                while(1){
+                    n = read(pipe_pair[0], (int) num, sizeof(num));
                     if(n == 0){
                         break;
                     }
