@@ -24,20 +24,20 @@ fmtname(char *path)
 }
 
 void
-ls(char *path)
+ls(char *path[])
 {
   char buf[512], *p;
   int fd;
   struct dirent de;
   struct stat st;
 
-  if((fd = open(path, O_RDONLY)) < 0){
-    fprintf(2, "ls: cannot open %s\n", path);
+  if((fd = open(path[2], O_RDONLY)) < 0){
+    fprintf(2, "ls: cannot open %s\n", path[2]);
     return;
   }
 
   if(fstat(fd, &st) < 0){
-    fprintf(2, "ls: cannot stat %s\n", path);
+    fprintf(2, "ls: cannot stat %s\n", path[2]);
     close(fd);
     return;
   }
@@ -46,8 +46,8 @@ ls(char *path)
   case T_DEVICE:
   
   case T_FILE:
-   if(strcmp(fmtname(buf), path)==0){
-    printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
+   if(strcmp(fmtname(buf), path[3])==0){
+    fprintf("%s\n", fmtname(path[3]));
    }
     break;
 
@@ -82,11 +82,13 @@ main(int argc, char *argv[])
 {
   int i;
 
-  if(argc < 2){
-    ls(".");
+for(int i=1; i<argc; i++){
+    fprintf(1, "%s\n", argv[i]);
+}
+
+  if(argc < 3){
     exit(0);
   }
-  for(i=1; i<argc; i++)
-    ls(argv[i]);
+    ls(argv);
   exit(0);
 }
