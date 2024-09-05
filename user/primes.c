@@ -36,6 +36,7 @@ int main(int argc, char *argv[]){
                 pipe_pair[0] = new_pipe[0];
                 continue;
             } else {
+                close(new_pipe[0]);
                 int num;
                 while(1){
                     n = read(pipe_pair[0], &num, sizeof(num));
