@@ -7,7 +7,6 @@ int main(int argc, char *argv[]){
     int pipe_pair[2];
     int res = pipe(pipe_pair);
     int n;
-    char buf[1024];
 
     if (res < 0) {
         exit(1);
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]){
                         break;
                     }
                     if(num % prime != 0){
-                        write(new_pipe[1], num, sizeof(num));
+                        write(new_pipe[1], &num, sizeof(num));
                     }
                 }
                 close(new_pipe[1]);
