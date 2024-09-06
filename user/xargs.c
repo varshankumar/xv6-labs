@@ -3,34 +3,49 @@
 #include "user/user.h"
 #include "kernel/param.h"
 
-int main(int argc, char* argv[]){
-    if(argc < 2){
+int main(int argc, char *argv[]) {
+    int n_flag = 1;
+    int command = 1;
+    if (argc >= 3 && strcmp(argv[1],"-n")==0) {
+        n_flag = atoi(argv[2]);
+        command=3;
+        if (n_flag < 1 || argc < 4) {
+            exit(1);
+        }
+    } else if (argc<2) {
         exit(1);
     }
 
     char buf[512];
-    int n;
-    char* args[MAXARG];
-    
-    for(int i = 1; i < argc; i++){
-        args[i-1] = argv[i];
+    char *xargv[MAXARG];
+
+    for (int i = command; i < argc; i++) {
+        xargv[i - command] = argv[i];
     }
 
-    while((n = read(0, buf, sizeof(buf))) > 0){
-        int i = 0;
-        while(i < n){
-            if(buf[i] == ' ' || buf[i] == '\n'){
-                buf[i] = '\0';
-                args[argc-1] = buf;
-                if(fork() == 0){
-                    exec(args[0], args);
-                    exit(0);
-                }
-                wait(0);
-                i++;
+    while (1) {
+        int n = 0;
+        while (read(0,buf+n, 1) == 1 && buf[n] != '\n') {
+            n++;
+            if (n >= sizeof(buf)-1) {
+                exit(1);
             }
-            i++;
+        }
+
+        if (n == 0) break;
+
+        buf[n] = 0;
+
+        xargv[argc-command] = buf;
+        xargv[argc-command+1]=0;
+
+        if (fork() == 0) {
+            exec(argv[command], xargv);
+            exit(1);
+        } else {
+            wait(0);
         }
     }
+
     exit(0);
 }

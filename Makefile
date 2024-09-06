@@ -190,6 +190,7 @@ UPROGS=\
 	$U/_stressfs\
 	$U/_usertests\
 	$U/_grind\
+	$U/_xargs\
 	$U/_wc\
 	$U/_zombie\
 
