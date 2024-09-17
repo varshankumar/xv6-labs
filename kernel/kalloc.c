@@ -13,6 +13,7 @@ void freerange(void *pa_start, void *pa_end);
 
 extern char end[]; // first address after kernel.
                    // defined by kernel.ld.
+extern struct run *freelist;
 
 struct run {
   struct run *next;
@@ -79,4 +80,16 @@ kalloc(void)
   if(r)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
+}
+
+uint64
+kfreemem(void){
+    struct run *r;
+    uint64 free_mem = 0;
+    acquire(&kmem.lock);
+    for (r = kmem.freelist; r; r = r->next) {
+        free_mem += PGSIZE;
+    }
+    release(&kmem.lock);
+    return free_mem;
 }

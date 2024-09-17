@@ -1,3 +1,11 @@
+#ifndef USER_USER_H
+#define USER_USER_H
+
+#include "sysinfo.h"
+#include "types.h"
+
+#endif
+
 struct stat;
 
 // system calls
@@ -40,3 +48,4 @@ int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 int trace(int mask);
+int sysinfo(struct sysinfo *info);

@@ -62,11 +62,14 @@ argint(int n, int *ip)
 // Retrieve an argument as a pointer.
 // Doesn't check for legality, since
 // copyin/copyout will do that.
-void
-argaddr(int n, uint64 *ip)
-{
-  *ip = argraw(n);
+int argaddr(int n, uint64 *ip){
+  if (n >= 0 && n < 6) {
+    *ip=argraw(n);
+    return 0;
+  }
+  return -1;
 }
+
 
 // Fetch the nth word-sized system call argument as a null-terminated string.
 // Copies into buf, at most max.
@@ -102,6 +105,7 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_trace(void);
+extern uint64 sys_sysinfo(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -128,6 +132,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_trace]   sys_trace,
+[SYS_sysinfo] sys_sysinfo,
 };
 
 static char *syscall_names[] = {
@@ -153,6 +158,7 @@ static char *syscall_names[] = {
   [SYS_mkdir]    "mkdir",
   [SYS_close]    "close",
   [SYS_trace]    "trace",
+  [SYS_sysinfo] "sysinfo",
 };  
 
 void
