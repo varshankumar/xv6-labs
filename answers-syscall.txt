@@ -1,0 +1,13 @@
+1. usertrap() is called in syscall()
+
+2. p->trapframe->a7 = 2 ; This represents the system call code for exit
+
+3. The CPU was previously in user mode
+
+4. lw	a3,0(zero) ; register a3 corresponds to the variable num
+
+5. The kernel crashes because there is a load page fault, confirmed by the value in scause.
+
+6. initcode was running when the kernel panicked. Its pid is 1.
+
+7. 
