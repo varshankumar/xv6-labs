@@ -1,0 +1,15 @@
+1. Registers a0 though a7 contain arguments to functions. 
+Register a2 holds 13 in main's call to printf.
+
+2. The call to function f is calculated by the compiler and put into register a1.
+26:	45b1                	li	a1,12
+Similarly, the compiler puts the function content in the code for f. 
+14:	250d                	addiw	a0,a0,3
+
+3. Function printf is located at address 642.
+
+4. The register ra contains the return address (38) just after the jalr to printf in main. 
+
+5. The output is "He110 World"
+
+6. The code will not compile because a second argument is not given. 
