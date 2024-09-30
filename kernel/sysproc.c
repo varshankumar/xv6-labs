@@ -93,3 +93,29 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// In kernel/sysproc.c
+uint64
+sys_sigalarm(void){
+  int ticks;
+  uint64 handler;
+
+  argint(0, &ticks);
+  argaddr(1, &handler);
+
+  struct proc *p = myproc();
+  p->interval = ticks;
+  p->handler = handler;
+  p->ticks = 0;
+  return 0;
+}
+
+uint64
+sys_sigreturn(void){
+  struct proc *p = myproc();
+
+  memmove(p->trapframe, p->saved_regs, sizeof(p->saved_regs));
+  p->alarm_active = 0;
+
+  return 0;
+}
