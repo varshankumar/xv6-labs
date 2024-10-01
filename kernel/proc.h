@@ -105,12 +105,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  uint interval;
-  uint ticks;
-  uint64 handler;              
-  int alarm_active;
-  uint64 saved_epc;
-  uint64 saved_sp;
-  uint64 saved_regs[32];
+  int alarm_interval;
+  int alarm_passed; 
+  uint64 alarm_handler;
+  struct trapframe etpfm;
 
 };

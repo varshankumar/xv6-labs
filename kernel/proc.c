@@ -120,10 +120,9 @@ allocproc(void)
     }
   }
 
-  p->interval = 0;
-  p->ticks = 0;
-  p->handler = 0;
-  p->alarm_active = 0;
+  p->alarm_interval = 0;
+  p->alarm_passed = 0;
+  p->alarm_handler = 0;
   return 0;
 
 found:
