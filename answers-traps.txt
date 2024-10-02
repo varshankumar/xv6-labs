@@ -12,4 +12,6 @@ Similarly, the compiler puts the function content in the code for f.
 
 5. The output is "He110 World"
 
-6. The code will not compile because a second argument is not given. 
+6. If RISCV was Big-endian then I would set i to 0x726C6400. You would not need to change 57616 to a different value.
+
+7. The code will not compile because a second argument is not given. 
