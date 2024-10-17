@@ -74,10 +74,46 @@ sys_sleep(void)
 int
 sys_pgaccess(void)
 {
-  
+  uint64 va;
+  int p;       // Number of pages
+  uint64 ra;   // User buffer address to store the bitmask
+
+  // Retrieve system call arguments
+  argaddr(0, &va);
+  argint(1, &p);
+  argaddr(2, &ra);
+
+  if (p > 64)
+    p = 64;
+
+  uint64 buff = 0; 
+  struct proc *proc = myproc();
+  pagetable_t pagetable = proc->pagetable;
+
+  for (int i = 0; i < p; i++) {
+    uint64 va_i = va + i * PGSIZE;
+    pte_t *pte = walk(pagetable, va_i, 0);
+
+    if (pte == 0)
+      continue;
+    if ((*pte & PTE_V) == 0)
+      continue;
+    if ((*pte & PTE_U) == 0)
+      continue;
+
+    if (*pte & PTE_A) {
+      buff |= ((uint64)1 << i); 
+      *pte &= ~PTE_A; 
+    }
+  }
+
+  if (copyout(pagetable, ra, (char *)&buff, sizeof(buff)) < 0)
+    return -1;
+
   return 0;
 }
 #endif
+
 
 uint64
 sys_kill(void)
