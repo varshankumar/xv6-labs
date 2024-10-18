@@ -1,3 +1,30 @@
-getppid() can be made faster by storing the parent process ID in the same read only page. This allows ugetppid() can read from the shared page instead of making a system call.
-
+1. getppid() can be made faster by storing the parent process ID in the same read only page. This allows ugetppid() can read from the shared page instead of making a system call.
 gettime() can be made faster by storing a timestamp in the read only page. In this case, a system call is not needed when the current time is needed.
+
+2. 0x0000000087f67000
+User code
+Permissions: R, X, U
+
+0x0000000087f64000
+Initialized data segment
+Permissions: R, W, U
+
+0x0000000087f63000
+Uninitialized data
+Permissions: R, W
+
+0x0000000087f62000
+Heap or additional data
+Permissions: R, W, U
+
+0x0000000087f68000
+Stack guard
+Permissions: R, U
+
+0x0000000087f74000
+User stack
+Permissions: R, W, U
+
+0x0000000080007000
+Trampoline
+Permissions: R, X
