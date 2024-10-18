@@ -201,16 +201,25 @@ proc_pagetable(struct proc *p)
     uvmfree(pagetable, 0);
     return 0;
   }
-   uint64 pa=(uint64)kalloc();
-  if(mappages(pagetable, USYSCALL, PGSIZE,
-              (uint64)(pa), PTE_R | PTE_U) < 0){
-    uvmunmap(pagetable, USYSCALL, 1, 0);
+
+  uint64 pa = (uint64)kalloc();
+  if(pa == 0) {
+    uvmunmap(pagetable, TRAMPOLINE, 1, 0);
+    uvmunmap(pagetable, TRAPFRAME, 1, 0);
     uvmfree(pagetable, 0);
     return 0;
   }
-  struct usyscall* usyscall;
-  usyscall=(struct usyscall*)pa;
-  usyscall->pid=p->pid;
+  
+  if(mappages(pagetable, USYSCALL, PGSIZE, pa, PTE_R | PTE_U) < 0){
+    kfree((void*)pa);
+    uvmunmap(pagetable, TRAMPOLINE, 1, 0);
+    uvmunmap(pagetable, TRAPFRAME, 1, 0);
+    uvmfree(pagetable, 0);
+    return 0;
+  }
+  
+  struct usyscall* usyscall = (struct usyscall*)pa;
+  usyscall->pid = p->pid;
 
   return pagetable;
 }
@@ -222,7 +231,7 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
-  uvmunmap(pagetable, USYSCALL, 1, 0);
+  uvmunmap(pagetable, USYSCALL, 1, 1);
   uvmfree(pagetable, sz);
 }
 
@@ -412,12 +421,9 @@ wait(uint64 addr)
     havekids = 0;
     for(pp = proc; pp < &proc[NPROC]; pp++){
       if(pp->parent == p){
-        // make sure the child isn't still in exit() or swtch().
         acquire(&pp->lock);
-
         havekids = 1;
         if(pp->state == ZOMBIE){
-          // Found one.
           pid = pp->pid;
           if(addr != 0 && copyout(p->pagetable, addr, (char *)&pp->xstate,
                                   sizeof(pp->xstate)) < 0) {
@@ -457,26 +463,26 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-
+  
   c->proc = 0;
   for(;;){
-    // The most recent process to run may have had interrupts
-    // turned off; enable them to avoid a deadlock if all
-    // processes are waiting.
     intr_on();
 
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        
+        uint64 start_time = r_time();
         swtch(&c->context, &p->context);
+        uint64 end_time = r_time(); 
+        
+        if(end_time - start_time > 1000000){
+          printf("Process %d (%s) ran for too long\n", p->pid, p->name);
+          procdump();
+        }
 
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
         c->proc = 0;
       }
       release(&p->lock);
@@ -694,6 +700,9 @@ procdump(void)
     else
       state = "???";
     printf("%d %s %s", p->pid, state, p->name);
+    if(p->state == SLEEPING){
+      printf(" %p", p->chan);
+    }
     printf("\n");
   }
 }
