@@ -1,0 +1,11 @@
+1. There missing keys with 2 threads, but not with 1 thread because with 2 threads there is a race condition because of the shared hash table where 2 threads are trying to modify the same hash table. This is not a problem with 1 thread becasue the put and get functions are called sequentially. 
+
+2. Thread A calls put(k, valueA)
+Thread B calls put(k, valueB)
+Thread A inserts k into table[i]
+Thread B inserts k into table[i] before A's insertion is complete
+Thread A's k is overwritten by Thread B so there is a missing key.
+
+3. Yes, after adding locks the missing keys are eliminated since I put the critical sections in locks.
+
+4. The two-threaded version achives parallel speedup relative to a single-threaded version as seen in the puts/second and gets.second. The single-threaded version had 16857 puts/second and 17887 gets/second. The two-threaded version had 20339 puts/second and 20768 gets/second.
